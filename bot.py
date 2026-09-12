@@ -2,6 +2,7 @@ import telebot
 import sys
 import requests
 from time import time, sleep
+from datetime import date
 import os
 import subprocess
 from threading import Thread
@@ -35,11 +36,6 @@ milestones = [25, 50, 75, 100]
 last_milestone = 0
 start_time = time()
 word_langs = []
-day_usage = []
-today_join = []
-today_audio_process = 0
-today_voice_process = 0
-today_video_process = 0
 
 for i in words['start']:
     if i not in word_langs:
@@ -76,26 +72,22 @@ def _is_file_too_large(error: Exception) -> bool:
 
 
 def clear_day_usage():
-    global today_audio_process, today_voice_process, today_video_process
     while True:
         try:
+            stats = _get_stats()
             for admin_id in admins:
                 try:
                     snd(
                         admin_id,
-                        f'today users: {len(day_usage)}\n'
-                        f'today joins: {len(today_join)}\n'
-                        f'today audio: {today_audio_process}\n'
-                        f'today voice: {today_voice_process}\n'
-                        f'today video: {today_video_process}',
+                        f'today users: {len(stats["users"])}\n'
+                        f'today joins: {len(stats["joins"])}\n'
+                        f'today audio: {stats["audio"]}\n'
+                        f'today voice: {stats["voice"]}\n'
+                        f'today video: {stats["video"]}',
                     )
                 except Exception:
                     pass
-            today_audio_process = 0
-            today_voice_process = 0
-            today_video_process = 0
-            day_usage.clear()
-            today_join.clear()
+            _reset_daily_stats()
             sleep(86400)
         except Exception as e:
             logger.exception("clear_day_usage failed")
@@ -128,10 +120,89 @@ def create_tables():
                 "CREATE TABLE IF NOT EXISTS users "
                 "(id TEXT PRIMARY KEY, time TEXT, lang TEXT)"
             )
+            conn.execute(
+                "CREATE TABLE IF NOT EXISTS daily_stats "
+                "(date TEXT PRIMARY KEY, users TEXT, joins TEXT, "
+                "audio INT, voice INT, video INT)"
+            )
             conn.commit()
     except Exception as e:
         logger.exception("Failed to create tables")
         report_admin(e)
+
+
+def _today():
+    return date.today().isoformat()
+
+
+def _ensure_today_row(conn):
+    today = _today()
+    conn.execute(
+        "INSERT OR IGNORE INTO daily_stats (date, users, joins, audio, voice, video) "
+        "VALUES (?, '', '', 0, 0, 0)", (today,)
+    )
+    return today
+
+
+def _get_stats():
+    try:
+        with _get_db() as conn:
+            today = _ensure_today_row(conn)
+            conn.commit()
+            row = conn.execute(
+                "SELECT users, joins, audio, voice, video FROM daily_stats WHERE date = ?",
+                (today,)
+            ).fetchone()
+        if row:
+            users_list = row[0].split(',') if row[0] else []
+            joins_list = row[1].split(',') if row[1] else []
+            return {
+                'users': [u for u in users_list if u],
+                'joins': [j for j in joins_list if j],
+                'audio': row[2],
+                'voice': row[3],
+                'video': row[4],
+            }
+    except Exception:
+        logger.exception("Failed to get stats")
+    return {'users': [], 'joins': [], 'audio': 0, 'voice': 0, 'video': 0}
+
+
+def _increment_stat(field, user_id=None):
+    try:
+        with _get_db() as conn:
+            today = _ensure_today_row(conn)
+            if user_id:
+                row = conn.execute(
+                    f"SELECT {field} FROM daily_stats WHERE date = ?", (today,)
+                ).fetchone()
+                current = row[0] if row else ''
+                ids = current.split(',') if current else []
+                uid_str = str(user_id)
+                if uid_str not in ids:
+                    ids.append(uid_str)
+                conn.execute(
+                    f"UPDATE daily_stats SET {field} = ? WHERE date = ?",
+                    (','.join(ids), today)
+                )
+            else:
+                conn.execute(
+                    f"UPDATE daily_stats SET {field} = {field} + 1 WHERE date = ?",
+                    (today,)
+                )
+            conn.commit()
+    except Exception:
+        logger.exception("Failed to increment stat %s", field)
+
+
+def _reset_daily_stats():
+    try:
+        with _get_db() as conn:
+            today = _today()
+            conn.execute("DELETE FROM daily_stats WHERE date != ?", (today,))
+            conn.commit()
+    except Exception:
+        logger.exception("Failed to reset daily stats")
 
 
 def add_to_file_ids_db(file_id, converted_id):
@@ -220,8 +291,7 @@ def join(user_id):
                 return
             user_lang = users[user_id]
         else:
-            if user_id not in today_join:
-                today_join.append(user_id)
+            _increment_stat('joins', user_id)
             add_users_to_db(user_id, int(time()))
             language_key(user_id)
             return
@@ -640,8 +710,7 @@ def forward_message_to_all_users(chat_id, msg_id, user_ids=None):
 
 @bot.message_handler(content_types=['video'])
 def video_handler(message):
-    global today_video_process
-    today_video_process += 1
+    _increment_stat('video')
     user_id = message.from_user.id
 
     if user_id not in users:
@@ -655,8 +724,7 @@ def video_handler(message):
         snd(user_id, words['offline']['en'])
         return
 
-    if user_id not in day_usage:
-        day_usage.append(user_id)
+    _increment_stat('users', user_id)
 
     try:
         user_lang = users[user_id]
@@ -681,8 +749,7 @@ def video_handler(message):
 
 @bot.message_handler(content_types=['audio'])
 def audio_handler(message):
-    global today_audio_process
-    today_audio_process += 1
+    _increment_stat('audio')
     user_id = message.from_user.id
 
     if user_id not in users:
@@ -696,8 +763,7 @@ def audio_handler(message):
         snd(user_id, words['offline'][users.get(user_id, 'en')])
         return
 
-    if user_id not in day_usage:
-        day_usage.append(user_id)
+    _increment_stat('users', user_id)
 
     try:
         user_lang = users[user_id]
@@ -714,7 +780,6 @@ def audio_handler(message):
 
 @bot.message_handler(content_types=['document'])
 def document_handler(message):
-    global today_audio_process
     doc = message.document
     file_name = (doc.file_name or '').lower()
     mime = (doc.mime_type or '').lower()
@@ -725,7 +790,7 @@ def document_handler(message):
     if not is_audio_doc:
         return
 
-    today_audio_process += 1
+    _increment_stat('audio')
     user_id = message.from_user.id
 
     if user_id not in users:
@@ -739,8 +804,7 @@ def document_handler(message):
         snd(user_id, words['offline'][users.get(user_id, 'en')])
         return
 
-    if user_id not in day_usage:
-        day_usage.append(user_id)
+    _increment_stat('users', user_id)
 
     try:
         user_lang = users[user_id]
@@ -757,8 +821,7 @@ def document_handler(message):
 
 @bot.message_handler(content_types=['voice'])
 def voice_handler(message):
-    global today_voice_process
-    today_voice_process += 1
+    _increment_stat('voice')
     user_id = message.from_user.id
 
     if user_id not in users:
@@ -772,8 +835,7 @@ def voice_handler(message):
         snd(user_id, words['offline'][users.get(user_id, 'en')])
         return
 
-    if user_id not in day_usage:
-        day_usage.append(user_id)
+    _increment_stat('users', user_id)
 
     try:
         user_lang = users[user_id]
@@ -791,8 +853,7 @@ def msg_handler(message):
     global online
     user_id = message.from_user.id
 
-    if user_id not in day_usage:
-        day_usage.append(user_id)
+    _increment_stat('users', user_id)
 
     try:
         txt = message.text
@@ -858,13 +919,14 @@ def msg_handler(message):
 
                 if user_id in admins:
                     if txt in ['status', 'amar', 'امار']:
+                        stats = _get_stats()
                         snd(
                             user_id,
                             f'users:{len(users)}\nadmins:{admins}\n'
-                            f'Today usage: {len(day_usage)}\nToday join: {len(today_join)}\n'
-                            f'today audio: {today_audio_process}\n'
-                            f'today voice: {today_voice_process}\n'
-                            f'today video: {today_video_process}',
+                            f'Today usage: {len(stats["users"])}\nToday join: {len(stats["joins"])}\n'
+                            f'today audio: {stats["audio"]}\n'
+                            f'today voice: {stats["voice"]}\n'
+                            f'today video: {stats["video"]}',
                         )
                     elif txt == 'online':
                         online = True

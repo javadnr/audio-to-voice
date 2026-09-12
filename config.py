@@ -16,9 +16,6 @@ bug_report_id = 1405966582
 ch = '@KITECK_TM'
 token = os.getenv("TOKEN")
 db_path = os.getenv("DB_PATH", "data/bot.db")
-today_audio_process = 0
-today_voice_process = 0
-today_video_process = 0
 online = True
 admins = [1405966582]
 
