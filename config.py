@@ -33,16 +33,16 @@ words = {
         "en": "🌍please select your language:",
     },
     "start": {
-        "fa": "🤖به ربات فایل های صوتی خوش آمدید🤖\n\nقابلیت ها:\n1️⃣: تبدیل فایل صوتی شما به وویس ✅\n2️⃣: تبدیل وویس شما به فایل صوتی ✅\n3️⃣: انتخاب نام دلخواه برای فایل✅\n\n@KITECK_TM",
-        "en": "🤖Welcome to mp3 tools bot🤖\n\nBot features:\n1️⃣: Convert mp3 file to voice message✅\n2️⃣: Convert voice message to mp3 file✅\n3️⃣: You can choose desired name for your file or a random name as you wish✅\n\n\n@KITECK_TM",
+        "fa": "🤖به ربات فایل های صوتی خوش آمدید🤖\n\nقابلیت ها:\n1️⃣: تبدیل فایل صوتی شما به وویس ✅\n2️⃣: تبدیل وویس شما به فایل صوتی ✅\n3️⃣: استخراج صدا از ویدیو ✅\n4️⃣: انتخاب نام دلخواه برای فایل✅\n\n@KITECK_TM",
+        "en": "🤖Welcome to mp3 tools bot🤖\n\nBot features:\n1️⃣: Convert mp3 file to voice message✅\n2️⃣: Convert voice message to mp3 file✅\n3️⃣: Extract audio from video✅\n4️⃣: You can choose desired name for your file✅\n\n\n@KITECK_TM",
     },
     'join': {
         'fa': f'برای استفاده از این ربات لازم است ابتدا در کانال زیر عضو شوید 👇🏻\n🆔 {ch}',
         'en': f'To use this robot, you must first join the channel below 👇🏻\n🆔 {ch}',
     },
     'invalid_command': {
-        'fa': '❌پیام شما قابل قبول نیست❌ \n⚠️برای استفاده از این ربات فایل صوتی و یا وویس خود را ارسال کنید.\n\n@KITECK_TM',
-        'en': '❌Your message is not acceptable❌\n⚠️ To use this bot send your voice or mp3 file.\n\n@KITECK_TM',
+        'fa': '❌پیام شما قابل قبول نیست❌ \n⚠️برای استفاده از این ربات فایل صوتی، وویس یا ویدیو ارسال کنید.\n\n@KITECK_TM',
+        'en': '❌Your message is not acceptable❌\n⚠️ To use this bot send your voice, mp3 file or video.\n\n@KITECK_TM',
     },
     'change_lang': {
         'fa': 'زبان شما به فارسی تغییر یافت',
@@ -61,8 +61,8 @@ words = {
         "en": "processing....\n\n@KITECK_TM",
     },
     'help_text': {
-        "fa": "@KITECK_TM\n\n📝فایل صوتی خود را ارسال نموده و وویس انرا دریافت کنید.\n\n📝 وویس خود را ارسال نموده برای ان نام انتخاب کنید و انرا به صورت فایل صوتی دریافت کنید.\n\n@KITECK_TM",
-        "en": "@KITECK_TM \n\n📝Send your mp3 file and get it as a voice message\n\n📝Send your voice and choose a name for your mp3 file and get the voice as a mp3 file with that name\n\n@KITECK_TM",
+        "fa": "@KITECK_TM\n\n📝فایل صوتی خود را ارسال نموده و وویس انرا دریافت کنید.\n\n📝 وویس خود را ارسال نموده برای ان نام انتخاب کنید و انرا به صورت فایل صوتی دریافت کنید.\n\n🎬 ویدیو ارسال کنید تا صدا استخراج شود.\n\n@KITECK_TM",
+        "en": "@KITECK_TM \n\n📝Send your mp3 file and get it as a voice message\n\n📝Send your voice and choose a name for your mp3 file and get the voice as a mp3 file with that name\n\n🎬Send a video to extract its audio\n\n@KITECK_TM",
     },
     'file_too_large': {
         'fa': '❌فایل شما بیش از حد مجاز پلتفرم است. لطفاً فایل کوچکتری ارسال کنید.',
