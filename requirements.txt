@@ -1,0 +1,4 @@
+pyTelegramBotAPI
+pydub
+python-dotenv
+requests
