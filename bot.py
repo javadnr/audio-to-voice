@@ -826,7 +826,10 @@ def msg_handler(message):
 
             elif txt == '/cancel':
                 if user_id in steps and steps[user_id] == 'get_name':
-                    bot.delete_message(user_id, user_voice_data[user_id]['wait'].id)
+                    try:
+                        bot.delete_message(user_id, user_voice_data[user_id]['wait'].id)
+                    except Exception:
+                        pass
                     snd(user_id, words['cancel_message'][user_lang])
                     del steps[user_id]
                     _remove_from_processing(user_id)

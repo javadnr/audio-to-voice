@@ -33,8 +33,8 @@ words = {
         "en": "🌍please select your language:",
     },
     "start": {
-        "fa": "🤖به ربات فایل های صوتی خوش آمدید🤖\n\nقابلیت ها:\n1️⃣: تبدیل فایل صوتی شما به وویس ✅\n2️⃣: تبدیل وویس شما به فایل صوتی ✅\n3️⃣: استخراج صدا از ویدیو ✅\n4️⃣: انتخاب نام دلخواه برای فایل✅\n\n@KITECK_TM",
-        "en": "🤖Welcome to mp3 tools bot🤖\n\nBot features:\n1️⃣: Convert mp3 file to voice message✅\n2️⃣: Convert voice message to mp3 file✅\n3️⃣: Extract audio from video✅\n4️⃣: You can choose desired name for your file✅\n\n\n@KITECK_TM",
+        "fa": "🤖به ربات فایل های صوتی خوش آمدید🤖\n\nقابلیت ها:\n1️⃣: تبدیل فایل صوتی شما به وویس ✅\n2️⃣: تبدیل وویس شما به فایل صوتی ✅\n3️⃣: استخراج صدا از ویدیو ✅\n\n🎤 فایل صوتی، وویس یا ویدیو ارسال کنید تا پردازش شود.\n\n@KITECK_TM",
+        "en": "🤖Welcome to mp3 tools bot🤖\n\nBot features:\n1️⃣: Convert mp3 file to voice message✅\n2️⃣: Convert voice message to mp3 file✅\n3️⃣: Extract audio from video✅\n\n🎤 Send your voice, video or mp3 file to start processing.\n\n@KITECK_TM",
     },
     'join': {
         'fa': f'برای استفاده از این ربات لازم است ابتدا در کانال زیر عضو شوید 👇🏻\n🆔 {ch}',
