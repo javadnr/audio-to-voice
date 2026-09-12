@@ -376,7 +376,7 @@ def send_voice_func(message, wait, user_id, user_lang):
         )
 
         with open(output_path, 'rb') as f:
-            voice_file_sent = bot.send_voice(user_id, f, caption='kiteck_tm')
+            voice_file_sent = bot.send_voice(user_id, f, caption='@KITECK_TM')
 
         bot.delete_message(user_id, wait.id)
 
@@ -420,7 +420,7 @@ def send_mp3_func(message, wait, user_id, user_lang, name):
             f.write(file_data)
 
         with open(input_path, 'rb') as f:
-            voice_file = bot.send_audio(user_id, f, caption='kiteck_tm', title=f'{name}.mp3')
+            voice_file = bot.send_audio(user_id, f, caption='@KITECK_TM', title=f'{name}.mp3')
 
         bot.delete_message(user_id, wait.id)
 
@@ -489,7 +489,7 @@ def process_video_send_audio(user_id, file_id, reply_message_id, wait, file_uniq
 
         with open(voice_path, "rb") as voice:
             voice_file_sent = bot.send_voice(
-                user_id, voice, reply_to_message_id=reply_message_id, caption='kiteck_tm',
+                user_id, voice, reply_to_message_id=reply_message_id, caption='@KITECK_TM',
             )
             voice_id = voice_file_sent.voice.file_id
         bot.delete_message(user_id, wait.id)
@@ -497,7 +497,7 @@ def process_video_send_audio(user_id, file_id, reply_message_id, wait, file_uniq
         with open(mp3_path, "rb") as mp3_file:
             audio_file_sent = bot.send_audio(
                 user_id, mp3_file, reply_to_message_id=reply_message_id,
-                caption='kiteck_tm', title='video_audio.mp3',
+                caption='@KITECK_TM', title='video_audio.mp3',
             )
             audio_id = audio_file_sent.audio.file_id
 
